@@ -1,3 +1,10 @@
+import torch
+
+print(torch.__version__)
+print(torch.cuda.is_available())
+print(torch.version.cuda)
+
+exit()
 import pandas as pd
 import numpy as np
 from pathlib import Path
