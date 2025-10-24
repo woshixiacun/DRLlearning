@@ -32,13 +32,13 @@ class baseDet(object):
         }
         self.frameCounter += 1
 
-        im, faces, face_bboxes = update_tracker(self, im)
+        im, faces, face_bboxes, bboxes = update_tracker(self, im)
 
         retDict['frame'] = im
         retDict['faces'] = faces
         retDict['face_bboxes'] = face_bboxes
 
-        return retDict
+        return retDict, bboxes
 
     def init_model(self):
         raise EOFError("Undefined model type.")
