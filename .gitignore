@@ -3,6 +3,9 @@
 **egg-info**
 
 data/
+*.png
+*.jpg
+*.mp4
 
 **log**
 

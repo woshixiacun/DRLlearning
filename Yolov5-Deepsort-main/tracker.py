@@ -42,6 +42,8 @@ def update_tracker(target_detector, image):
     new_faces = []
     _, bboxes = target_detector.detect(image)
 
+
+    # return image, new_faces, [], bboxes
     bbox_xywh = []
     confs = []
     clss = []
@@ -59,7 +61,7 @@ def update_tracker(target_detector, image):
     xywhs = torch.Tensor(bbox_xywh)
     confss = torch.Tensor(confs)
 
-    outputs = deepsort.update(xywhs, confss, clss, image)
+    outputs = deepsort.update(xywhs, confss, clss, image) # 跟踪
 
     bboxes2draw = []
     face_bboxes = []

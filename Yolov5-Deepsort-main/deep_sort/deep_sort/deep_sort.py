@@ -28,13 +28,13 @@ class DeepSort(object):
     def update(self, bbox_xywh, confidences, clss, ori_img):
         self.height, self.width = ori_img.shape[:2]
         # generate detections
-        features = self._get_features(bbox_xywh, ori_img)
+        features = self._get_features(bbox_xywh, ori_img)  # 提取小图（框框）特征 （5，512）
         bbox_tlwh = self._xywh_to_tlwh(bbox_xywh)
         detections = [Detection(bbox_tlwh[i], clss[i], conf, features[i]) for i, conf in enumerate(
-            confidences) if conf > self.min_confidence]
+            confidences) if conf > self.min_confidence]    # 把这帧里所有‘高分框’封装成 Detection 对象列表，只保留置信度足够高的框，并把每个框做成一个 Detection 元组，供后续卡尔曼+匈牙利匹配使用。
         # update tracker
-        self.tracker.predict()
-        self.tracker.update(detections)
+        self.tracker.predict() # 卡尔曼滤波预测
+        self.tracker.update(detections) # 匹配
 
         # output bbox identities
         outputs = []
@@ -47,7 +47,7 @@ class DeepSort(object):
         return outputs
 
     @staticmethod
-    def _xywh_to_tlwh(bbox_xywh):
+    def _xywh_to_tlwh(bbox_xywh):   # 把 “中心点+宽高” 表示的框 转换成 “左上角点+宽高” 表示的框
         if isinstance(bbox_xywh, np.ndarray):
             bbox_tlwh = bbox_xywh.copy()
         elif isinstance(bbox_xywh, torch.Tensor):
@@ -91,10 +91,10 @@ class DeepSort(object):
         im_crops = []
         for box in bbox_xywh:
             x1, y1, x2, y2 = self._xywh_to_xyxy(box)
-            im = ori_img[y1:y2, x1:x2]
+            im = ori_img[y1:y2, x1:x2] # 抠出框框
             im_crops.append(im)
         if im_crops:
-            features = self.extractor(im_crops)
+            features = self.extractor(im_crops)  # 提取抠出框框的特征  （5，512）
         else:
             features = np.array([])
         return features

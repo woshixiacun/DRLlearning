@@ -127,6 +127,11 @@ def attempt_load(weights, map_location=None, inplace=True):
         elif type(m) is Conv:
             m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatibility
 
+    # 假设 self.m 是你加载的 YOLOv5 模型
+    for m in model.modules():
+        if isinstance(m, nn.Upsample):
+            m.recompute_scale_factor = None  # 兼容 PyTorch 2.x
+
     if len(model) == 1:
         return model[-1]  # return model
     else:

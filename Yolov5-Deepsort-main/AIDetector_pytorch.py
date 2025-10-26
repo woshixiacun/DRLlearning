@@ -28,15 +28,15 @@ class Detector(baseDet):
 
     def preprocess(self, img):
 
-        img0 = img.copy()
-        img = letterbox(img, new_shape=self.img_size)[0]
-        img = img[:, :, ::-1].transpose(2, 0, 1)
-        img = np.ascontiguousarray(img)
-        img = torch.from_numpy(img).to(self.device)
-        img = img.half()  # 半精度
+        img0 = img.copy()  # 500 888 3
+        img = letterbox(img, new_shape=self.img_size)[0] #384 640 3
+        img = img[:, :, ::-1].transpose(2, 0, 1) # 3 384 640   第一步BGR → RGB。OpenCV 读出来是 BGR 顺序，PyTorch 预训练模型习惯 RGB，于是用切片倒序把通道换过来。第二步HWC → CHW。
+        img = np.ascontiguousarray(img)  # 把数组变成内存连续。
+        img = torch.from_numpy(img).to(self.device)  #numpy → tensor，并搬到 GPU/CPU。
+        img = img.half()  # 半精度 FP32 → FP16（半精度）。
         img /= 255.0  # 图像归一化
         if img.ndimension() == 3:
-            img = img.unsqueeze(0)
+            img = img.unsqueeze(0)  #补 batch 维度。现在 tensor 形状是 (C,H,W)，模型要求 (N,C,H,W)。unsqueeze(0) 在最前面加一维，变成 1 张图的 batch。
 
         return img0, img
 

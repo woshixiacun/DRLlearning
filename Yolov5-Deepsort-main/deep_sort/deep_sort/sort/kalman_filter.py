@@ -82,7 +82,7 @@ class KalmanFilter(object):
             10 * self._std_weight_velocity * measurement[3],
             1e-5,
             10 * self._std_weight_velocity * measurement[3]]
-        covariance = np.diag(np.square(std))
+        covariance = np.diag(np.square(std))  #就是把位置、速度共 8 个标准差先平方，再拼成一个 8×8 的对角矩阵，当作过程噪声协方差 Q。
         return mean, covariance
 
     def predict(self, mean, covariance):
@@ -91,7 +91,7 @@ class KalmanFilter(object):
         Parameters
         ----------
         mean : ndarray
-            The 8 dimensional mean vector of the object state at the previous
+            The 8 dimensional mean vector of the object state at the previous   # 上一时刻目标状态的 8 维均值向量
             time step.
         covariance : ndarray
             The 8x8 dimensional covariance matrix of the object state at the

@@ -30,20 +30,20 @@ class Extractor(object):
             2. resize to (64, 128) as Market1501 dataset did
             3. concatenate to a numpy array
             3. to torch Tensor
-            4. normalize
+            4. normalize # 检测框里截出来的任意大小行人图 → 统一缩放 → 归一化 → 打包成 GPU 张量 → 等 CNN 来提 128-D 外观特征
         """
         def _resize(im, size):
             return cv2.resize(im.astype(np.float32)/255., size)
 
         im_batch = torch.cat([self.norm(_resize(im, self.size)).unsqueeze(0) for im in im_crops], dim=0).float()
-        return im_batch
+        return im_batch  #5 3 128 64
 
 
     def __call__(self, im_crops):
         im_batch = self._preprocess(im_crops)
         with torch.no_grad():
             im_batch = im_batch.to(self.device)
-            features = self.net(im_batch)
+            features = self.net(im_batch)   # 把批次扔进 CNN， 输出特征： （5，512）
         return features.cpu().numpy()
 
 

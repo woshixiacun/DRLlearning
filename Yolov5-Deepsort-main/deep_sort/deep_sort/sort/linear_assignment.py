@@ -12,9 +12,9 @@ INFTY_COST = 1e+5
 def min_cost_matching(
         distance_metric, max_distance, tracks, detections, track_indices=None,
         detection_indices=None):
-    if track_indices is None:
+    if track_indices is None: # ioutrack 候选
         track_indices = np.arange(len(tracks))
-    if detection_indices is None:
+    if detection_indices is None: # unmatch detections
         detection_indices = np.arange(len(detections))
 
     if len(detection_indices) == 0 or len(track_indices) == 0:
@@ -22,9 +22,9 @@ def min_cost_matching(
 
     cost_matrix = distance_metric(
         tracks, detections, track_indices, detection_indices)
-    cost_matrix[cost_matrix > max_distance] = max_distance + 1e-5
+    cost_matrix[cost_matrix > max_distance] = max_distance + 1e-5 # 算Iou
 
-    row_indices, col_indices = linear_assignment(cost_matrix)
+    row_indices, col_indices = linear_assignment(cost_matrix) # 匈牙利匹配
 
     matches, unmatched_tracks, unmatched_detections = [], [], []
     for col, detection_idx in enumerate(detection_indices):
@@ -83,7 +83,7 @@ def matching_cascade(
         * A list of unmatched detection indices.
 
     """
-    if track_indices is None:
+    if track_indices is None:   # 传入的 confirmed_tracks
         track_indices = list(range(len(tracks)))
     if detection_indices is None:
         detection_indices = list(range(len(detections)))
@@ -96,7 +96,7 @@ def matching_cascade(
 
         track_indices_l = [
             k for k in track_indices
-            if tracks[k].time_since_update == 1 + level
+            if tracks[k].time_since_update == 1 + level # 有匹配的变成0，为了记录什么时候被删除
         ]
         if len(track_indices_l) == 0:  # Nothing to match at this level
             continue
@@ -106,7 +106,7 @@ def matching_cascade(
                 distance_metric, max_distance, tracks, detections,
                 track_indices_l, unmatched_detections)
         matches += matches_l
-    unmatched_tracks = list(set(track_indices) - set(k for k, _ in matches))
+    unmatched_tracks = list(set(track_indices) - set(k for k, _ in matches))  #从所有待匹配的轨迹索引中，去掉已经成功匹配的轨迹索引，得到“未匹配上的轨迹索引列表”。
     return matches, unmatched_tracks, unmatched_detections
 
 

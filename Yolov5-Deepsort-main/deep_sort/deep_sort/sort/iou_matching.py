@@ -72,10 +72,10 @@ def iou_cost(tracks, detections, track_indices=None,
     cost_matrix = np.zeros((len(track_indices), len(detection_indices)))
     for row, track_idx in enumerate(track_indices):
         if tracks[track_idx].time_since_update > 1:
-            cost_matrix[row, :] = linear_assignment.INFTY_COST
+            cost_matrix[row, :] = linear_assignment.INFTY_COST    # 如果失配的次数，大于1，给一个很大损失
             continue
 
-        bbox = tracks[track_idx].to_tlwh()
-        candidates = np.asarray([detections[i].tlwh for i in detection_indices])
+        bbox = tracks[track_idx].to_tlwh() # 预测的框
+        candidates = np.asarray([detections[i].tlwh for i in detection_indices])  #检测的框
         cost_matrix[row, :] = 1. - iou(bbox, candidates)
     return cost_matrix
