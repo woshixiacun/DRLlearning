@@ -28,15 +28,17 @@ def load_and_preprocess(csv_path: str,
     scaler_X, scaler_y = StandardScaler(), StandardScaler()
     X = scaler_X.fit_transform(X)
     y = scaler_y.fit_transform(y)
-
+    
     # 模型训练完后，如果你想把预测值还原回原始量纲（例如画图、算误差），可以：
     # y_pred_original = scaler_y.inverse_transform(y_pred)
     # 未来有新样本时，用同一套参数做变换：
     # X_new = scaler_X.transform(X_new)
 
-    # 分割训练测试集: 训练集：占 80 %（因为 test_size=0.2）;测试集：占 20 %   
-    # random_state=42 就是给随机数发生器上锁：数据集拆分、模型初始化、交叉验证等任何带随机性的步骤，
-    # 只要 random_state 一样，每次跑代码得到的结果完全一致（行顺序、划分方式、随机初始化权重等都相同）。
+    """
+    分割训练测试集: 训练集：占 80 %（因为 test_size=0.2) ;测试集：占 20 %   
+    random_state=42 就是给随机数发生器上锁：数据集拆分、模型初始化、交叉验证等任何带随机性的步骤，
+    只要 random_state 一样，每次跑代码得到的结果完全一致（行顺序、划分方式、随机初始化权重等都相同）    
+    """
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state)
 
@@ -110,6 +112,11 @@ class NOxDataset(Dataset):
         self.y = torch.tensor(y, dtype=torch.float32)
 
     def __len__(self):
+        """
+        告诉 DataLoader 这个数据集一共有多少条样本，这样它才能知道：
+        每次迭代要产生多少个 batch
+        下标该从 0 取到 len-1
+        """
         return len(self.X)
 
     def __getitem__(self, idx):
@@ -142,7 +149,7 @@ if __name__ == "__main__":
 
     train_dataset = NOxDataset(X_train, y_train)
     test_dataset  = NOxDataset(X_test, y_test)
-    
+
     train_loader  = DataLoader(train_dataset, batch_size=32, shuffle=True)
     test_loader   = DataLoader(test_dataset,  batch_size=32)
 
