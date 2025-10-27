@@ -65,4 +65,3 @@ class Detector(baseDet):
                         (x1, y1, x2, y2, lbl, conf))
 
         return im, pred_boxes
-
