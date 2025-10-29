@@ -143,6 +143,7 @@ class TransformerRegressor(nn.Module):
         out = self.output_linear(x)             # 输出预测
         return out
 
+
 if __name__ == "__main__":
     csv_path = r"C:/Users/Clavi/Desktop/DRLlearning/SCRprocess/tuox_hd_20250710_0722.csv"
     X_train, X_test, y_train, y_test, scaler_X, scaler_y = load_and_preprocess(csv_path)
@@ -158,7 +159,10 @@ if __name__ == "__main__":
 
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-
+    
+    # train
     train_model(model, train_loader, criterion, optimizer, device, epochs=100)
+    # test
     preds_real, trues_real = evaluate_model(model, test_loader, scaler_y, device)
+    print(f'preds_real={preds_real}, trues_real={trues_real}')
 
