@@ -54,7 +54,7 @@ class Tracker:
         active_targets = [t.track_id for t in self.tracks if t.is_confirmed()]
         features, targets = [], []
         for track in self.tracks:
-            if not track.is_confirmed(): # 如果是 unconfirmed
+            if not track.is_confirmed():
                 continue
             features += track.features
             targets += [track.track_id for _ in track.features]
