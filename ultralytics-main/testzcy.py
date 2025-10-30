@@ -41,16 +41,16 @@ def split_dataset(root_dir: str,
                   val_ratio: float = 0.1,
                   seed: int = 42):
     """
-    将 NEU_DET 数据集按类别 8:1:1 分成 train/val/test，
+    将 NEU_DET 数据集按类别 8:1:1 分成 train/val/test
     并把对应图片路径写入三个 txt 文件。
     """
-    random.seed(seed)
+    random.seed(seed)  #给 Python 内置的随机数引擎固定种子，让后续所有 shuffle、randint 等随机操作每次运行结果都一样，保证数据集划分可复现。
     img_dir = Path(root_dir).resolve() / 'images'
     assert img_dir.is_dir(), f'{img_dir} 不存在'
 
-    # 1. 按类别聚合图片
-    category_to_imgs = defaultdict(list)
-    for img_path in img_dir.glob('*.jpg'):
+    # 1. 按类别聚合图片,得到所有类别的路径
+    category_to_imgs = defaultdict(list) # 把 category_to_imgs 初始化为“空字典默认值是 空列表”的容器，以后对任意新键第一次 append 时不会报错，会自动先给该键建一个空列表。
+    for img_path in img_dir.glob('*.jpg'):  #在 img_dir 目录下通配查找所有 .jpg 文件
         stem = img_path.stem
         if '_' not in stem:
             continue
@@ -60,7 +60,8 @@ def split_dataset(root_dir: str,
     # 2. 划分
     train_paths, val_paths, test_paths = [], [], []
     for category, imgs in category_to_imgs.items():
-        imgs = sorted(imgs)
+        # 路径按字符串顺序统一排个序，保证每次划分前图片顺序一致，结果可复现。
+        imgs = sorted(imgs)  
         random.shuffle(imgs)
         n = len(imgs)
         n_train = int(n * train_ratio)
@@ -70,13 +71,14 @@ def split_dataset(root_dir: str,
         test_paths.extend(imgs[n_train + n_val:])  
     
      # 准备输出目录
-    out_dir = Path(root_dir).resolve() / 'dataset'
+    out_dir = Path(root_dir).resolve() / 'dataset'   #把 root_dir 转换成绝对路径（解析掉 .、.. 等符号），避免后续路径出错。
     out_dir.mkdir(exist_ok=True)
 
     # 3. 写入 txt（改为绝对路径，也可换成相对路径）
     def write_txt(paths, txt_name):
-        with open(out_dir / txt_name, 'w', encoding='utf-8') as f:
-            for p in sorted(paths):
+        # 把 out_dir 和文件名拼成完整路径，以 写模式、UTF-8 编码打开文件；with 块结束后会自动关闭文件。
+        with open(out_dir / txt_name, 'w', encoding='utf-8') as f:   
+            for p in sorted(paths):   # 把路径列表先排序，再逐个取出路径 p，保证写入顺序固定、可复现。
                 f.write(str(p) + '\n')
 
     write_txt(train_paths, 'train.txt')
@@ -88,6 +90,6 @@ def split_dataset(root_dir: str,
 
 # 如果脚本被直接运行，则默认创建当前目录下的 dataset 文件夹
 if __name__ == "__main__":
-    # make_yolo_dirs()  #'C:/Users/Clavi/Desktop/DRLlearning/zcy'
-    root = 'C:/Users/Clavi/Desktop/DRLlearning/ultralytics-main/NEU_DET'  # 换成你的实际路径
-    split_dataset(root)
+    # root = 'C:/Users/Clavi/Desktop/DRLlearning/ultralytics-main/NEU_DET'  # 换成你的实际路径
+    # split_dataset(root)
+    pass
