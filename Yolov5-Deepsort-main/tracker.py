@@ -40,7 +40,7 @@ def plot_bboxes(image, bboxes, line_thickness=None):
 def update_tracker(target_detector, image):
 
     new_faces = []
-    _, bboxes = target_detector.detect(image)
+    _, bboxes = target_detector.detect(image) #这一帧的检测框
 
 
     # return image, new_faces, [], bboxes

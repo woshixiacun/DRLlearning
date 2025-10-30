@@ -35,4 +35,5 @@ def make_yolo_dirs(root: Union[str, Path] = "dataset") -> Path:
 
 # 如果脚本被直接运行，则默认创建当前目录下的 dataset 文件夹
 if __name__ == "__main__":
-    make_yolo_dirs()  #'C:/Users/Clavi/Desktop/DRLlearning/zcy'
+    # make_yolo_dirs()  #'C:/Users/Clavi/Desktop/DRLlearning/zcy'
+    pass

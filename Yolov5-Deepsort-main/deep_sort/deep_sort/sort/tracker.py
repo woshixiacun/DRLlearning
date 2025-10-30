@@ -41,12 +41,12 @@ class Tracker:
             self._match(detections)
 
         # Update track set.
-        for track_idx, detection_idx in matches:
+        for track_idx, detection_idx in matches:   # match上的track更新
             self.tracks[track_idx].update(
                 self.kf, detections[detection_idx])
-        for track_idx in unmatched_tracks:
+        for track_idx in unmatched_tracks:         # 没match上track的标记miss
             self.tracks[track_idx].mark_missed()
-        for detection_idx in unmatched_detections:
+        for detection_idx in unmatched_detections:    # 没match上detection（新进入视野）初始化成track
             self._initiate_track(detections[detection_idx])
         self.tracks = [t for t in self.tracks if not t.is_deleted()] # 删掉失配超过70次，删除
 
@@ -54,7 +54,7 @@ class Tracker:
         active_targets = [t.track_id for t in self.tracks if t.is_confirmed()]
         features, targets = [], []
         for track in self.tracks:
-            if not track.is_confirmed():
+            if not track.is_confirmed(): # 如果是 unconfirmed
                 continue
             features += track.features
             targets += [track.track_id for _ in track.features]

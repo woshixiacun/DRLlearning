@@ -6,6 +6,7 @@ data/
 *.png
 *.jpg
 *.mp4
+*.xml
 
 **log**
 
