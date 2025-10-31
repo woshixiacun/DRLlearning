@@ -4,7 +4,11 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
 import os
+import numpy as np  
+
 # --------------------------------------------------
 # 1️⃣ 读取 + 预处理
 # --------------------------------------------------
@@ -101,7 +105,15 @@ def evaluate_model(model, test_loader, scaler_y, device):
     preds_real = scaler_y.inverse_transform(preds)
     trues_real = scaler_y.inverse_transform(trues)
 
+    # ✅ 模型评估指标
+    rmse = np.sqrt(mean_squared_error(trues_real, preds_real))
+    mae = mean_absolute_error(trues_real, preds_real)
+    r2 = r2_score(trues_real, preds_real)
+
     print("✅ 测试集预测完成")
+    print(f"📊 RMSE: {rmse:.4f}")
+    print(f"📊 MAE : {mae:.4f}")
+    print(f"📊 R²   : {r2:.4f}")
     return preds_real, trues_real
 
 
@@ -127,25 +139,43 @@ class NOxDataset(Dataset):
 
 # 3️⃣ 定义 Transformer 模型
 class TransformerRegressor(nn.Module):
-    def __init__(self, input_dim=3, d_model=64, nhead=4, num_layers=2, dim_feedforward=128):
+    def __init__(self, input_dim=3, d_model=128, nhead=4, num_layers=4, dim_feedforward=256, dropout=0.1):
         super().__init__()
-        self.input_linear = nn.Linear(input_dim, d_model)
-        encoder_layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=nhead, dim_feedforward=dim_feedforward)
+        self.input_linear = nn.Linear(input_dim, d_model)   #换成mlp 
+        encoder_layer = nn.TransformerEncoderLayer(d_model=d_model, 
+                                                   nhead=nhead, 
+                                                   dim_feedforward=dim_feedforward,
+                                                    dropout=dropout,
+                                                    batch_first=True)  # 新版 Transformer 支持 batch_first=True)
         self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+        self.layer_norm = nn.LayerNorm(d_model)
         self.output_linear = nn.Linear(d_model, 1)
+
+        self._init_weights()
+
+    def _init_weights(self):
+        # Xavier 初始化让模型收敛更快
+        for name, param in self.named_parameters():
+            if param.dim() > 1:
+                nn.init.xavier_uniform_(param)
 
     def forward(self, x):
         # x: (batch, seq_len, feature_dim)
-        x = self.input_linear(x)                # (batch, seq_len, d_model)
-        x = x.permute(1, 0, 2)                  # 转换为 (seq_len, batch, d_model)
-        x = self.transformer(x)                 # Transformer 编码
-        x = x.mean(dim=0)                       # 池化 (取平均)
-        out = self.output_linear(x)             # 输出预测
+        x = self.input_linear(x)
+        x = self.layer_norm(x)
+        x = self.transformer(x)   # (batch, seq_len, d_model)
+        
+        # 结合平均池化和最后一个时间步
+        x_mean = x.mean(dim=1)
+        x_last = x[:, -1, :]
+        x = (x_mean + x_last) / 2
+
+        out = self.output_linear(x)
         return out
 
-
 if __name__ == "__main__":
-    csv_path = r"C:/Users/Clavi/Desktop/DRLlearning/SCRprocess/tuox_hd_20250710_0722.csv"
+    # csv_path = r"C:/Users/Clavi/Desktop/DRLlearning/SCRprocess/tuox_hd_20250710_0722.csv"
+    csv_path = "/mnt/d/Study_File/DRLlearning-main/SCRprocess/tuox_hd_20250710_0722.csv"
     X_train, X_test, y_train, y_test, scaler_X, scaler_y = load_and_preprocess(csv_path)
 
     train_dataset = NOxDataset(X_train, y_train)
@@ -159,10 +189,15 @@ if __name__ == "__main__":
 
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-    
-    # train
-    train_model(model, train_loader, criterion, optimizer, device, epochs=100)
-    # test
-    preds_real, trues_real = evaluate_model(model, test_loader, scaler_y, device)
-    print(f'preds_real={preds_real}, trues_real={trues_real}')
 
+    train_model(model, train_loader, criterion, optimizer, device, epochs=100)
+    preds_real, trues_real = evaluate_model(model, test_loader, scaler_y, device)
+
+    #  保存模型和标准化器
+    save_dir = "/mnt/d/Study_File/DRLlearning-main/checkpoints"
+    os.makedirs(save_dir, exist_ok=True)
+
+    torch.save(model.state_dict(), os.path.join(save_dir, "transformer_regressor.pth"))
+    import joblib
+    joblib.dump(scaler_X, os.path.join(save_dir, "scaler_X.pkl"))
+    joblib.dump(scaler_y, os.path.join(save_dir, "scaler_y.pkl"))
