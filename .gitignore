@@ -18,6 +18,7 @@ venv/
 *.so
 *.pth
 *.pkl
+*.pt
 *.zip
 *.bin
 *.pdf

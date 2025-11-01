@@ -1,0 +1,13 @@
+path: /mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/coco8 # dataset root dir
+train: /mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/coco8/images/train # train images (relative to 'path') 4 images
+val: /mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/coco8/images/val # val images (relative to 'path') 4 images
+test: # test images (optional)
+
+# Classes
+names:
+  0: person
+  1: bicycle
+  2: car
+  3: motorcycle
+  4: airplane
+  5: bus
