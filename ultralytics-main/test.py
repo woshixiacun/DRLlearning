@@ -6,8 +6,8 @@ import os
 # img_path = r"/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/coco8/images/train/000000000025.jpg"
 # txt_path = r"/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/coco8/labels/train/000000000025.txt"
 # 1. 路径 ------------------------------------------------------------------
-img_path = r"/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata/images/val/crazing_43.jpg"
-txt_path = r"/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata/labels/val/crazing_43.txt"
+img_path = r"/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata/images/val/scratches_37.jpg"
+txt_path = r"/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata/labels/val/scratches_37.txt"
 save_path = os.path.join('/mnt/d/Study_File/codezcy', "000000000026_vis.jpg")
 
 # 2. 读取图像 ---------------------------------------------------------------
