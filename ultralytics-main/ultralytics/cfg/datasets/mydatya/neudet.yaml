@@ -1,6 +1,6 @@
-path: /mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata
-train: /mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata/images/train
-val: /mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET/mydata/images/val
+path: C:/Users/Clavi/Desktop/coding/DRLlearning/ultralytics-main/NEU_DET/mydata
+train: C:/Users/Clavi/Desktop/coding/DRLlearning/ultralytics-main/NEU_DET/mydata/images/train
+val: C:/Users/Clavi/Desktop/coding/DRLlearning/ultralytics-main/NEU_DET/mydata/images/val
 # test:   # test images (optional)
 
 # Classes

@@ -102,6 +102,8 @@ from .transformer import (
     TransformerLayer,
 )
 
+from .myblock import MyBlock  # ✅ 新增行
+
 __all__ = (
     "AIFI",
     "C1",

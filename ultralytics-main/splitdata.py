@@ -198,8 +198,8 @@ def xml_2_txt(root_dir):
 
 # 如果脚本被直接运行，则默认创建当前目录下的 dataset 文件夹
 if __name__ == "__main__":
-    root_dir = '/mnt/d/Study_File/codezcy/DRLlearning/ultralytics-main/datasets/NEU_DET'  # 换成你的实际路径
-    # xml_2_txt(root_dir)
+    root_dir = 'C:/Users/Clavi/Desktop/coding/DRLlearning/ultralytics-main/NEU_DET'  # 换成你的实际路径
+    xml_2_txt(root_dir)
     split_dataset2(root_dir)
     
     
